@@ -4,6 +4,7 @@ import os
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
+import torchvision.transforms as transforms
 
 
 class FacesDataset(Dataset):
@@ -25,11 +26,27 @@ class FacesDataset(Dataset):
 
     def __getitem__(self, index) -> tuple[torch.Tensor, int]:
         """Get a sample and label from the dataset."""
-        """INSERT YOUR CODE HERE, overrun return."""
-        #test git connection to my ubuntu
-        return torch.rand((3, 256, 256)), int(torch.randint(0, 2, size=(1, )))
+        # image should be tensor
+        # label - 0 for real, 1 for fake
+        # TODO: check the following if
+        if index < int(self.__len__() / 2):
+            label = 0
+            image_path = os.path.join(self.root_path, 'real', self.real_image_names[index])
+
+        else:
+            index = index - len(self.real_image_names)
+            label = 1
+            image_path = os.path.join(self.root_path, 'fake', self.fake_image_names[index])
+
+        im = Image.open(image_path)
+        if self.transform is not None:
+            im_tensor = self.transform(im)
+        if not torch.is_tensor(im):
+            transform = transforms.Compose([transforms.PILToTensor()])
+            im_tensor = transform(im)
+
+        return im_tensor, label
 
     def __len__(self):
         """Return the number of images in the dataset."""
-        """INSERT YOUR CODE HERE, overrun return."""
-        return 100
+        return len(self.real_image_names) + len(self.fake_image_names)
