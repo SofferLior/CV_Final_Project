@@ -60,7 +60,23 @@ class Trainer:
         print_every = int(len(train_dataloader) / 10)
 
         for batch_idx, (inputs, targets) in enumerate(train_dataloader):
-            """INSERT YOUR CODE HERE."""
+            #  1. zero the gradients
+            self.optimizer.zero_grad()
+            #  2. compute forward pass
+            inputs_prediction = self.model.forward(inputs.float())
+            #  3. compute the total_loss
+            total_loss = self.criterion(inputs_prediction,targets)
+            #  4. compute backward pass
+            total_loss.backward()
+            #  5. step optimizer
+            self.optimizer.step()
+            #  6. update avg loss and accuracy
+            nof_samples += len(inputs)
+            correct_labeled_samples += int(torch.sum(targets == torch.argmax(inputs_prediction, axis=1)))
+            avg_loss += total_loss.item()
+            accuracy = 100*correct_labeled_samples/nof_samples
+            # TODO: total loss vs loss?
+
             if batch_idx % print_every == 0 or \
                     batch_idx == len(train_dataloader) - 1:
                 print(f'Epoch [{self.epoch:03d}] | Loss: {avg_loss:.3f} | '
@@ -92,7 +108,17 @@ class Trainer:
         print_every = max(int(len(dataloader) / 10), 1)
 
         for batch_idx, (inputs, targets) in enumerate(dataloader):
-            """INSERT YOUR CODE HERE."""
+            #  1. compute a forward pass
+            with torch.no_grad():
+                inputs_prediction = self.model.forward(inputs.float())
+            #  2. compute loss
+            total_loss = self.criterion(inputs_prediction, targets)
+            #  3. update avg loss and accuracy
+            nof_samples += len(inputs)
+            correct_labeled_samples += int(torch.sum(targets == torch.argmax(inputs_prediction, axis=1)))
+            avg_loss += total_loss.item()
+            accuracy = 100*correct_labeled_samples/nof_samples
+
             if batch_idx % print_every == 0 or batch_idx == len(dataloader) - 1:
                 print(f'Epoch [{self.epoch:03d}] | Loss: {avg_loss:.3f} | '
                       f'Acc: {accuracy:.2f}[%] '
