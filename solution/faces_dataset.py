@@ -28,8 +28,7 @@ class FacesDataset(Dataset):
         """Get a sample and label from the dataset."""
         # image should be tensor
         # label - 0 for real, 1 for fake
-        # TODO: check the following if
-        if index < int(self.__len__() / 2):
+        if index < len(self.real_image_names):
             label = 0
             image_path = os.path.join(self.root_path, 'real', self.real_image_names[index])
 
