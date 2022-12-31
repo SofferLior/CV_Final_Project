@@ -63,9 +63,10 @@ def get_soft_scores_and_true_labels(dataset, model):
     dataloader = DataLoader(dataset, batch_size=32, shuffle=False)
     for batch_idx, (inputs, targets) in enumerate(dataloader):
         inputs_prediction = model.forward(inputs.float())
-        all_first_soft_scores = torch.cat((all_first_soft_scores, inputs_prediction[:, 0]))
-        all_second_soft_scores = torch.cat((all_second_soft_scores, inputs_prediction[:, 1]))
+        all_first_soft_scores = torch.cat((all_first_soft_scores, inputs_prediction[:, 0].detach()))
+        all_second_soft_scores = torch.cat((all_second_soft_scores, inputs_prediction[:, 1].detach()))
         gt_labels = torch.cat((gt_labels, targets))
+        # print(f'{batch_idx}/{len(dataloader)}')
     return all_first_soft_scores, all_second_soft_scores, gt_labels
 
 
