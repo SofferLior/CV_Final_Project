@@ -42,4 +42,31 @@ def get_xception_based_model() -> nn.Module:
     classification head stated in the exercise.
     """
     """INSERT YOUR CODE HERE, overrun return."""
-    return SimpleNet()
+    from collections import OrderedDict
+
+    custom_network = build_xception_backbone(pretrained=True)
+    custom_network.requires_grad_(False)
+    custom_network.fc = nn.Sequential(OrderedDict([
+        ('Linear1', nn.Linear(2048, 1000)),
+        ('relu1', nn.ReLU()),
+        ('Linear2', nn.Linear(1000, 256)),
+        ('relu2', nn.ReLU()),
+        ('Linear3', nn.Linear(256, 64)),
+        ('relu3', nn.ReLU()),
+        ('Linear4', nn.Linear(64, 2)),
+        ]))
+    return custom_network
+
+if __name__ == "__main__":
+    from xcpetion import build_xception_backbone
+    from utils import get_nof_params
+
+    model = build_xception_backbone()
+    sum_param_backbone = get_nof_params(model)
+    print(sum_param_backbone, " - backbone Parameters")
+
+    model_tuned = get_xception_based_model()
+    sum_param_tuned = get_nof_params(model_tuned)
+    print(sum_param_tuned, " - tuned Parameters")
+
+    print(f"We added {sum_param_tuned-sum_param_backbone} Parameters")
