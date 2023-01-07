@@ -45,7 +45,7 @@ def get_xception_based_model() -> nn.Module:
     from collections import OrderedDict
 
     custom_network = build_xception_backbone(pretrained=True)
-    custom_network.requires_grad_(False)
+    # custom_network.requires_grad_(False)
     custom_network.fc = nn.Sequential(OrderedDict([
         ('Linear1', nn.Linear(2048, 1000)),
         ('relu1', nn.ReLU()),
