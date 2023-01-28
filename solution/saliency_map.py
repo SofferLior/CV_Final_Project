@@ -26,9 +26,12 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Plot saliency maps.')
     parser.add_argument('--model', '-m',
                         default='XceptionBased', type=str,
+                        # default='SimpleNet', type=str,
                         help='Model name: SimpleNet or XceptionBased.')
     parser.add_argument('--checkpoint_path', '-cpp',
-                        default='checkpoints/XceptionBased.pt', type=str,
+                        # default='checkpoints/XceptionBased.pt', type=str,
+                        default='checkpoints/synthetic_dataset_XceptionBased_Adam.pt', type=str,
+                        # default='checkpoints/fakes_dataset_SimpleNet_Adam.pt', type=str,
                         help='Path to model checkpoint.')
     parser.add_argument('--dataset', '-d',
                         default='fakes_dataset', type=str,
@@ -61,8 +64,22 @@ def compute_gradient_saliency_maps(samples: torch.tensor,
         saliency: vanilla gradient saliency maps. This should be a tensor of
         shape Bx256x256 where B is the number of images in samples.
     """
+    # return torch.rand(6, 256, 256)
     """INSERT YOUR CODE HERE, overrun return."""
-    return torch.rand(6, 256, 256)
+
+    samples2 = samples.type(dtype=torch.float32).requires_grad_()
+    # Compute a forward pass for the samples
+    outputs = model(samples2)
+    # Get the scores for the true labels of the samples
+    scores = outputs[[true_labels == outputs.argmax(1)]]
+    # Compute a backward pass on the scores
+    scores.sum().backward()
+    # Get the gradients from the samples
+    gradients = abs(samples2.grad)
+    # Compute the absolute value of the gradients
+    saliency, _ = torch.max(input=gradients, dim=1)
+
+    return saliency
 
 
 def main():  # pylint: disable=R0914, R0915
@@ -105,6 +122,7 @@ def main():  # pylint: disable=R0914, R0915
                                                     all_saliency_maps)):
         plt.subplot(6, 6 * 2, 2 * idx + 1)
         # plot image
+        image = image.type(dtype=torch.float32) # TODO: Idan added this line (divide to float)
         image -= image.min()
         image /= image.max()
         plt.imshow(image)
