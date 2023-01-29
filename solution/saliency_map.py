@@ -116,6 +116,7 @@ def main():  # pylint: disable=R0914, R0915
                                                     all_saliency_maps)):
         plt.subplot(6, 6 * 2, 2 * idx + 1)
         # plot image
+        image = image.type(dtype=torch.float32)  # TODO: verify this change
         image -= image.min()
         image /= image.max()
         plt.imshow(image)
