@@ -41,5 +41,17 @@ def get_xception_based_model() -> nn.Module:
     (2) Override `custom_network`'s fc attribute with the binary
     classification head stated in the exercise.
     """
-    """INSERT YOUR CODE HERE, overrun return."""
-    return SimpleNet()
+    from collections import OrderedDict
+    # TODO: VERIFY THIS LIBRARY
+    custom_network = build_xception_backbone(pretrained=True)
+    custom_network.requires_grad_(False)
+    custom_network.fc = nn.Sequential(OrderedDict([
+        ('Linear1', nn.Linear(2048, 1000)),
+        ('relu1', nn.ReLU()),
+        ('Linear2', nn.Linear(1000, 256)),
+        ('relu2', nn.ReLU()),
+        ('Linear3', nn.Linear(256, 64)),
+        ('relu3', nn.ReLU()),
+        ('Linear4', nn.Linear(64, 2)),
+        ]))
+    return custom_network
