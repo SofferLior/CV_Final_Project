@@ -66,6 +66,7 @@ def compute_gradient_saliency_maps(samples: torch.tensor,
     outputs = model(samples2)
     # Get the scores for the true labels of the samples
     scores = outputs[[true_labels == outputs.argmax(1)]]
+    scores = scores.max(1)[0]
     # Compute a backward pass on the scores
     scores.sum().backward()
     # Get the gradients from the samples
