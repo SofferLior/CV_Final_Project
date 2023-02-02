@@ -51,8 +51,28 @@ def get_grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
         the true label of that sample (since it is an output of a DataLoader
         of batch size 1, it's a tensor of shape (1,)).
     """
-    """INSERT YOUR CODE HERE, overrun return."""
-    return np.random.rand(256, 256, 3), torch.randint(0, 2, (1,))
+    from pytorch_grad_cam.utils.image import show_cam_on_image
+    from pytorch_grad_cam import GradCAM
+    from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+
+    # sample a single image from the dataset
+    dataloader = DataLoader(test_dataset, batch_size=1, shuffle=True)
+    input_im, target = next(iter(dataloader))
+
+    # compute Grad-CAM for layer conv3
+    conv_layer = [model.conv3]
+    cam = GradCAM(model=model, target_layers=conv_layer)
+    heatmap = cam(input_tensor=input_im.float(), eigen_smooth=True,
+                  targets=[ClassifierOutputTarget(target)])
+
+    # normalize image
+    input_array = input_im.squeeze().float().numpy()
+    input_array /= input_array.max()
+    input_array = np.transpose(input_array, (1, 2, 0))
+
+    # create visualization
+    visualization = show_cam_on_image(input_array, heatmap[0, :, :], use_rgb=True)
+    return visualization, target
 
 
 def main():
