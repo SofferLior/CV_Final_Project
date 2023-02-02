@@ -4,7 +4,6 @@ import os
 import torch
 from PIL import Image
 from torch.utils.data import Dataset
-import torchvision.transforms as transforms
 
 
 class FacesDataset(Dataset):
@@ -26,8 +25,6 @@ class FacesDataset(Dataset):
 
     def __getitem__(self, index) -> tuple[torch.Tensor, int]:
         """Get a sample and label from the dataset."""
-        # image should be tensor
-        # label - 0 for real, 1 for fake
         if index < len(self.real_image_names):
             label = 0
             image_path = os.path.join(self.root_path, 'real', self.real_image_names[index])
@@ -40,9 +37,6 @@ class FacesDataset(Dataset):
         im = Image.open(image_path)
         if self.transform is not None:
             im_tensor = self.transform(im)
-        if not torch.is_tensor(im):
-            transform = transforms.Compose([transforms.PILToTensor()])
-            im_tensor = transform(im)
 
         return im_tensor, label
 

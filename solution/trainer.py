@@ -63,7 +63,7 @@ class Trainer:
             #  1. zero the gradients
             self.optimizer.zero_grad()
             #  2. compute forward pass
-            inputs_prediction = self.model.forward(inputs.float())
+            inputs_prediction = self.model.forward(inputs)
             #  3. compute the total_loss
             loss = self.criterion(inputs_prediction,targets)
             #  4. compute backward pass
@@ -113,7 +113,7 @@ class Trainer:
         for batch_idx, (inputs, targets) in enumerate(dataloader):
             #  1. compute a forward pass
             with torch.no_grad():
-                inputs_prediction = self.model.forward(inputs.float())
+                inputs_prediction = self.model.forward(inputs)
             #  2. compute loss
             loss = self.criterion(inputs_prediction, targets)
             #  3. update avg loss and accuracy

@@ -62,11 +62,11 @@ def get_grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
     # compute Grad-CAM for layer conv3
     conv_layer = [model.conv3]
     cam = GradCAM(model=model, target_layers=conv_layer)
-    heatmap = cam(input_tensor=input_im.float(), eigen_smooth=True,
+    heatmap = cam(input_tensor=input_im, eigen_smooth=True,
                   targets=[ClassifierOutputTarget(target)])
 
     # normalize image
-    input_array = input_im.squeeze().float().numpy()
+    input_array = input_im.squeeze().numpy()
     input_array /= input_array.max()
     input_array = np.transpose(input_array, (1, 2, 0))
 

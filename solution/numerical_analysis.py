@@ -62,7 +62,7 @@ def get_soft_scores_and_true_labels(dataset, model):
     gt_labels = torch.tensor([])
     dataloader = DataLoader(dataset, batch_size=32, shuffle=False)
     for batch_idx, (inputs, targets) in enumerate(dataloader):
-        inputs_prediction = model.forward(inputs.float())
+        inputs_prediction = model.forward(inputs)
         all_first_soft_scores = torch.cat((all_first_soft_scores, inputs_prediction[:, 0].detach()))
         all_second_soft_scores = torch.cat((all_second_soft_scores, inputs_prediction[:, 1].detach()))
         gt_labels = torch.cat((gt_labels, targets))
