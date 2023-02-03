@@ -124,7 +124,8 @@ def main():  # pylint: disable=R0914, R0915
         # plot saliency map
         plt.subplot(6, 6 * 2, 2 * idx + 2)
         saliency_map -= saliency_map.min()
-        saliency_map /= saliency_map.max()
+        if saliency_map.max() > 0:
+            saliency_map /= saliency_map.max()
         plt.imshow(saliency_map)
         plt.xticks([])
         plt.yticks([])
@@ -161,11 +162,13 @@ def main():  # pylint: disable=R0914, R0915
 
     for idx in range(all_real_saliency_maps.shape[0]):
         all_real_saliency_maps[idx] -= all_real_saliency_maps[idx].min()
-        all_real_saliency_maps[idx] /= all_real_saliency_maps[idx].max()
+        if all_real_saliency_maps[idx].max() > 0:
+            all_real_saliency_maps[idx] /= all_real_saliency_maps[idx].max()
 
     for idx in range(all_fake_saliency_maps.shape[0]):
-        all_fake_saliency_maps[idx] -= all_fake_saliency_maps[idx].min()
-        all_fake_saliency_maps[idx] /= all_fake_saliency_maps[idx].max()
+        if all_fake_saliency_maps[idx].max() >0:
+            all_fake_saliency_maps[idx] -= all_fake_saliency_maps[idx].min()
+            all_fake_saliency_maps[idx] /= all_fake_saliency_maps[idx].max()
 
     mean_saliency_maps = plt.figure()
     plt.subplot(1, 2, 1)
