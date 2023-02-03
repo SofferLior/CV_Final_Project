@@ -9,25 +9,28 @@ from collections import OrderedDict
 save_path = 'checkpoints/competition_model.pt'
 
 def fineTune_block(in_features):
+    print(in_features)
     return nn.Sequential(OrderedDict([
         ('Linear1', nn.Linear(in_features, 624)),
-        ('relu1', nn.SiLU()),
+        ('relu1', nn.ReLU()),
         ('Linear2', nn.Linear(624, 256)),
-        ('relu2', nn.SiLU()),
+        ('relu2', nn.ReLU()),
         ('Linear3', nn.Linear(256, 64)),
-        ('relu3', nn.SiLU()),
+        ('relu3', nn.ReLU()),
         ('Linear4', nn.Linear(64, 2)),
     ]))
 
 
 def compModel(savenew=False, pretrained=False):
     # Based on: https://pytorch.org/vision/main/models.html
-    model = models.efficientnet_v2_m(pretrained=pretrained) # weights are saved
-    num_features = model.classifier[1].in_features
+    model = models.mobilenet_v3_large(pretrained=pretrained) # weights are saved
+    last_fc = model.classifier[-1]
+    num_features = last_fc.in_features
     tune_block = fineTune_block(in_features=num_features)
-    model.classifier = tune_block # binary classification (num_of_class == 2)
+    model.classifier[-1] = tune_block # binary classification (num_of_class == 2)
 
     if savenew:
+        print(model.classifier)
         torch.save({'model': model.state_dict()}, save_path)
     return model
 

@@ -23,9 +23,11 @@ def parse_args():
                         help='SGD momentum')
     parser.add_argument('--batch_size', '-b', default=128, type=int,
                         help='Training batch size')
-    parser.add_argument('--epochs', '-e', default=2, type=int,
+    parser.add_argument('--epochs', '-e', default=10, type=int,
                         help='Number of epochs to run')
-    parser.add_argument('--model', '-m', default='SimpleNet', type=str,
+    # parser.add_argument('--model', '-m', default='SimpleNet', type=str,
+    # TODO: del row below
+    parser.add_argument('--model', '-m', default='comp', type=str,
                         help='Model name: SimpleNet or XceptionBased')
     parser.add_argument('--optimizer', '-o', default='SGD', type=str,
                         help='Optimization Algorithm')
