@@ -24,13 +24,13 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description='Analyze network performance.')
     parser.add_argument('--model', '-m',
-                        default='XceptionBased', type=str,
+                        default='SimpleNet', type=str,
                         help='Model name: SimpleNet or XceptionBased.')
     parser.add_argument('--checkpoint_path', '-cpp',
-                        default='checkpoints/XceptionBased.pt', type=str,
+                        default='checkpoints/synthetic_dataset_SimpleNet_Adam.pt', type=str,
                         help='Path to model checkpoint.')
     parser.add_argument('--dataset', '-d',
-                        default='fakes_dataset', type=str,
+                        default='synthetic_dataset', type=str,
                         help='Dataset: fakes_dataset or synthetic_dataset.')
 
     return parser.parse_args()
@@ -54,7 +54,6 @@ def get_grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
     from pytorch_grad_cam.utils.image import show_cam_on_image
     from pytorch_grad_cam import GradCAM
     from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-
     # sample a single image from the dataset
     dataloader = DataLoader(test_dataset, batch_size=1, shuffle=True)
     input_im, target = next(iter(dataloader))
@@ -62,13 +61,12 @@ def get_grad_cam_visualization(test_dataset: torch.utils.data.Dataset,
     # compute Grad-CAM for layer conv3
     conv_layer = [model.conv3]
     cam = GradCAM(model=model, target_layers=conv_layer)
-    heatmap = cam(input_tensor=input_im, eigen_smooth=True,
-                  targets=[ClassifierOutputTarget(target)])
+    heatmap = cam(input_tensor=input_im, targets=[ClassifierOutputTarget(target)])
 
     # normalize image
-    input_array = input_im.squeeze().numpy()
-    input_array /= input_array.max()
-    input_array = np.transpose(input_array, (1, 2, 0))
+    input_im = input_im.squeeze()
+    input_im = (input_im - input_im.min()) / (input_im.max() - input_im.min())
+    input_array = np.transpose(input_im.numpy(), (1, 2, 0))
 
     # create visualization
     visualization = show_cam_on_image(input_array, heatmap[0, :, :], use_rgb=True)
